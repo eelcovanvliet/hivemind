@@ -85,17 +85,18 @@ class MooringSystemState(State):
         ...
 
 class LayDown(MooringSystemState):
-
+    """State that represents the mooring system as it awaits hook-up"""
     def create_in_ofx(self):
         raise NotImplementedError()
 
 class InSitu(MooringSystemState):
-
+    """State that represents the mooring system after hook-up and tensioning"""
     def create_in_ofx(self):
         raise NotImplementedError()
 
 class Weathered(MooringSystemState):
-
+    """State that represents the mooring system after a considerable amount of time.
+    This could include  e.g. marine growth, corrosion and creep."""
     def create_in_ofx(self):
         raise NotImplementedError()
 
@@ -117,7 +118,7 @@ if __name__ == "__main__":
 
     from abstracts import test_subclass
     test_subclass(ms)
-    
+
     ms.create_in_ofx()
 
     
