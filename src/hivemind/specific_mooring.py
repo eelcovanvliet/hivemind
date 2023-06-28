@@ -1,11 +1,11 @@
-from generic_mooring import Mooring
+from generic_mooring import MooringSystem
 from carg_io.abstracts import ParameterSet
 
 
 class CatenaryDesign(ParameterSet):
     AnchorRadius = 100
 
-class Catenary(Mooring):
+class Catenary(MooringSystem):
 
     def __init__(self, parameters:ParameterSet):
         self._parameters = parameters

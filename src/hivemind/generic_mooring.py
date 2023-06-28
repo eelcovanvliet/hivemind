@@ -35,30 +35,30 @@ class LAT(SiteState):
 
 
 
-class Mooring(Base):
+class MooringSystem(Base):
     
     def __init__(self, parameters):
         self.parameters = parameters
         self._state = InSitu(self)
         self._states = {
-            MooringState.Enum.LayDown : LayDown,
-            MooringState.Enum.HookUp : HookUp,
-            MooringState.Enum.InSitu : InSitu,
-            MooringState.Enum.Weathered : Weathered,
+            MooringSystemState.Enum.LayDown : LayDown,
+            MooringSystemState.Enum.HookUp : HookUp,
+            MooringSystemState.Enum.InSitu : InSitu,
+            MooringSystemState.Enum.Weathered : Weathered,
 
         }
 
     @property   
-    def state(self) -> MooringState:
+    def state(self) -> MooringSystemState:
         return self._state
     
     @property
-    def states(self) -> Dict[MooringState.Enum, MooringState]:
+    def states(self) -> Dict[MooringSystemState.Enum, MooringSystemState]:
         return self._states
 
 
 
-class MooringState(State):
+class MooringSystemState(State):
 
     class Enum:
         LayDown = 1
@@ -71,16 +71,16 @@ class MooringState(State):
         ...
 
 
-class LayDown(MooringState):
+class LayDown(MooringSystemState):
     pass
 
-class HookUp(MooringState):
+class HookUp(MooringSystemState):
     pass
 
-class InSitu(MooringState):
+class InSitu(MooringSystemState):
     pass
 
-class Weathered(MooringState):
+class Weathered(MooringSystemState):
     pass
 
 

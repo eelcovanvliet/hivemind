@@ -1,5 +1,5 @@
 
-from specific_mooring import CatenaryDesign, Catenary
+from specific_MooringSystem import CatenaryDesign, Catenary
 
 
 class Caternary3x4Design(CatenaryDesign):
@@ -17,4 +17,4 @@ class Presets:
         return Catenary(design)
 
 
-mooring_system = Presets.NewcasteOffshoreWind()
+MooringSystem_system = Presets.NewcasteOffshoreWind()
