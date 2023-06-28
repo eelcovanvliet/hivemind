@@ -1,5 +1,5 @@
 from __future__ import annotations
-from abstracts import Base, State
+from .abstracts import Base, State
 from abc import ABC, abstractmethod, abstractproperty
 from enum import Enum
 from typing import Dict
