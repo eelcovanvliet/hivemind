@@ -2,7 +2,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod, abstractproperty
 from carg_io.abstracts import ParameterSet
-
+from typing import List, Dict, Tuple
 
 class Base(ABC):
     """Base offers a template for create parameteric object supporting finite states.
@@ -39,7 +39,7 @@ class Base(ABC):
 
     So now, the structure will return different values for the same method,
     depending on what state is is.
-    
+
 
     
     """
@@ -49,16 +49,16 @@ class Base(ABC):
     
     @abstractproperty
     def state(self) -> State:
-        """Should return the currently active state.
-        
-
-
-
-        """
+        """Should return the currently active state instance"""
         ...
 
     @abstractproperty
-    def previous_state(self) -> State:
+    def possible_states(self) -> Dict[str, State]:
+        """Should return the possible finite states this object can take on."""
+        ...
+
+    @abstractproperty
+    def previous_state(self) -> State|None:
         """Should return the state of the previous state, but not actually
         change to this state)"""
         ...
@@ -71,9 +71,6 @@ class Base(ABC):
     
 
 
-    
-
-
 class State(ABC):
     """
     Abstract base class that represents one of the finite states a Structure may take on.
@@ -83,3 +80,30 @@ class State(ABC):
 
     def __init__(self, base:Base):
         self.base = base
+
+
+def test_subclass(instance:Base):
+
+    assert isinstance(instance, Base)
+    assert isinstance(instance.parameters, ParameterSet)
+    assert isinstance(instance.state, State)
+    assert isinstance(instance.possible_states, dict)
+
+    for string, state in instance.possible_states.items():
+        assert isinstance(string, str)
+        assert isinstance(state, State)
+
+    try:
+        out = instance.change_state(string)
+        assert isinstance(out, bool)
+    except NotImplementedError:
+        pass
+
+    try:
+        out = instance.previous_state
+        assert isinstance(out, None|State)
+    except NotImplementedError:
+        pass
+    
+
+
