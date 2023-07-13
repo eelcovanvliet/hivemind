@@ -1,7 +1,7 @@
 
 from __future__ import annotations
 from abc import ABC, abstractmethod, abstractproperty
-from carg_io.abstracts import ParameterSet
+from carg_io.abstracts import ParameterSet, Parameter, units
 from typing import List, Dict, Tuple
 
 class Base(ABC):
@@ -82,6 +82,42 @@ class State(ABC):
         self.base = base
 
 
+
+class Inertia(ABC):
+    """Describes the inertial properties of a point mass"""
+
+    @abstractproperty
+    def translation(self):
+        """Should return the translational inertia (mass). In general
+        this may be in different in three directions, but typically it's one
+        values for all
+        """
+        ...
+
+    @abstractproperty
+    def rotation(self):
+        """Should return the rotation inertia with respect to self.location"""
+        ...
+
+    @abstractproperty
+    def location(self):
+        """Should return the location of the point mass"""
+        ...
+
+
+class Mesh(ABC):
+    """Describes a mesh conisting of nodes and connectivity (edges) between them"""
+
+    @abstractproperty
+    def nodes(self):
+        ...
+    
+    @abstractproperty
+    def connectivity(self):
+        ...
+
+
+
 def test_subclass(instance:Base):
 
     assert isinstance(instance, Base)
@@ -104,6 +140,6 @@ def test_subclass(instance:Base):
         assert isinstance(out, None|State)
     except NotImplementedError:
         pass
-    
+
 
 
