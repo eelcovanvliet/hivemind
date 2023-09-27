@@ -10,7 +10,7 @@ from gmsh_utils import mesh
 import gmsh
 import numpy as np
 from pathlib import Path
-import meshmagick.mmio as mmio
+# import meshmagick.mmio as mmio
 import pandas as pd
 
 class Structure(Base):
