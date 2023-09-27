@@ -3,7 +3,7 @@ from .abstracts import Base, State
 from .abstracts import Mesh, Inertia
 from abc import ABC, abstractmethod, abstractproperty
 from enum import Enum
-from typing import Dict
+from typing import Dict, Tuple
 from carg_io.abstracts import ParameterSet, Parameter, units
 from gmsh_utils import utils
 from gmsh_utils import mesh
@@ -60,8 +60,7 @@ class Structure(Base):
             utils.ui.start_ui(mode='mesh')
         return self.mesh
 
-    @staticmethod
-    def cut_geometry(geometry: utils.VolumeComponent, draft: float, roll: float):
+    def cut_geometry(self, geometry: utils.VolumeComponent, draft: float, roll: float) -> Tuple[utils.AreaComponent, utils.VolumeComponent]:
         """Take the geometry and peforms a "cut" using a plane based on draft and roll
 
         NOTE:
@@ -73,54 +72,27 @@ class Structure(Base):
                 NOTE: Asssumes origin of geometry at aft, centerline, keel
 
         Return:
-            volumes_below_water_surface: List[Tuple]
-                gmsh dimTags of the volumes below the water surface (cutting plane)
-            water_crossing_surfaces:List[Tuple]
-                gmsh dimTags of the surfaces outlined by the sscv water line.
+            volumes_below_water_surface: utils.VolumeComponent
+                Component containing the volumes below the water surface (cutting plane)
+            water_crossing_surfaces: utils.AreaComponent
+                Component containing the surfaces outlined by the sscv water line.
 
         """
         geometry.translate(dx=0, dy=0, dz=0).rotate(0, 0, 0, 1, 0, 0, np.deg2rad(roll))
 
+        bmin, bmax = geometry.get_bounding_box()
+
         # Create slicing plane
-        size = max(500, 500)*1.25
         plane = utils.make_polygon([
-            [0,  0,  draft],
-            [size,  0,  draft],
-            [size, size, draft],
-            [0, size, draft],
+            [bmin[0]*1.1,  bmin[1]*1.1,  draft],
+            [bmax[0]*1.1,  bmin[1]*1.1,  draft],
+            [bmax[0]*1.1,  bmax[1]*1.1,  draft],
+            [bmin[0]*1.1,  bmax[1]*1.1,  draft],
+            
         ])
-        plane.translate(dx=-size*0.1, dy=-size/2)
-
         # Fragment (general fuse) geometry using plane
-        mapping = geometry.fragment([plane])
-
-        # Loop through the mapping and get volumes and planes -> applied to prevent errors for different mapping lengths
-        volume_fragments = []
-        plane_fragments = []
-
-        for mapElement in mapping:
-            for fragment in mapElement:
-                if fragment[0] == 2:
-                    plane_fragments.append(fragment)
-                elif fragment[0] == 3:
-                    volume_fragments.append(fragment)
-                else:
-                    raise ValueError('Mapped fragment not a surface or volume')
-
-        # Find the volumes that are below the water surface (cutting plane)
-        volume_below_water_surface = []
-        for volume in volume_fragments:
-            volume_cog = gmsh.model.occ.get_center_of_mass(3, volume[1])
-            if volume_cog[2] < draft:
-                volume_below_water_surface.append(volume)
-
-        # Find the areas that represent the water plane
-        water_crossing_surfaces = []
-        for area in plane_fragments:
-            volumes, lines = gmsh.model.get_adjacencies(2, area[1])
-            is_part_of_volume = bool(len(volumes))
-            if is_part_of_volume:
-                water_crossing_surfaces.append(area)
+        water_crossing_surfaces = geometry.slice([plane])
+        volume_below_water_surface = geometry[geometry.z < water_crossing_surfaces.z.max()]
 
         return volume_below_water_surface, water_crossing_surfaces    
 
