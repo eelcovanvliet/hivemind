@@ -41,7 +41,7 @@ class Structure(Base):
             ValueError: error if file extensions does not match .msh
 
         Returns:
-            mesh (list): the readed mesh fike
+            mesh (list): the readed mesh file
         """
         file = Path(file)
         if file.suffix != '.msh':
@@ -60,16 +60,17 @@ class Structure(Base):
             utils.ui.start_ui(mode='mesh')
         return self.mesh
 
-    def cut_geometry(self, geometry: utils.VolumeComponent, draft: float, roll: float) -> Tuple[utils.AreaComponent, utils.VolumeComponent]:
+    def cut_geometry(self, geometry: utils.VolumeComponent, draft: float, roll: float) -> Tuple[utils.VolumeComponent, utils.AreaComponent]:
         """Take the geometry and peforms a "cut" using a plane based on draft and roll
 
-        NOTE:
-            - cutting plane size currently set to 500 by 500 -> use of bounding box in future version
-
         Parameters:
-            geometry:utils.VolumeComponent
+            geometry: utils.VolumeComponent
                 The geometry as returned by .get_geometry()
                 NOTE: Asssumes origin of geometry at aft, centerline, keel
+            draft: float
+                Draft of the object in meters
+            roll: float
+                Roll of the object in degrees
 
         Return:
             volumes_below_water_surface: utils.VolumeComponent

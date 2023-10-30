@@ -83,7 +83,7 @@ class State(ABC):
 
 
 
-class Inertia(ABC):
+class ABCInertia(ABC):
     """Describes the inertial properties of a point mass"""
 
     @abstractproperty
@@ -103,6 +103,77 @@ class Inertia(ABC):
     def location(self):
         """Should return the location of the point mass"""
         ...
+
+
+class Inertia(ABCInertia):
+    """An object that describes the inertial properties of a point mass"""
+
+
+    def __init__(self, mass: float, location: Tuple[float, float, float]) -> None:
+        """_summary_
+
+        Args:
+            mass (float): _description_
+            location (Tuple[float, float, float]): _description_
+
+
+            # ToDO work with setters?
+        """
+        super().__init__()
+        self.mass = mass
+        self.location = location
+
+    def __add__(self, other: Inertia|List[Inertia]) -> Inertia:
+
+            if not isinstance(other, list):
+                other = [other]
+
+    @property
+    def mass(self):
+        """Returns the mass of the point mass object"""
+        return self._mass
+
+    @mass.setter
+    def mass(self, value: float):
+        """ Sets the mass of the object
+        """
+        if isinstance(value, float):
+            self._mass = value
+
+    @property
+    def location(self):
+        """ Returns the [x, y, z] location of the point mass object"""
+        return self._location
+    
+    @location.setter
+    def location(self, value: Tuple[float, float, float]):
+        """Sets the location of the object"""
+        if isinstance(value, Tuple) & (len(value) == 3):
+            self._location = value
+    
+    @property
+    def location_x(self):
+        """Returns the x location of the center of point mass object"""
+        return self._location[0]
+
+    @property
+    def location_y(self):
+        """Returns the y location of the center of point mass object"""
+        return self._location[1]
+
+    @property
+    def location_z(self):
+        """Returns the z location of the center of point mass object"""
+        return self._location[2]
+    
+    @property
+    def rotation(self):
+        raise NotImplementedError
+
+    @property
+    def translation(self):
+        raise NotImplementedError
+
 
 
 class Mesh(ABC):
